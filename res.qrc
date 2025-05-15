@@ -1,0 +1,34 @@
+<RCC>
+  <qresource prefix="image">
+    <file>image/background 700x400.png</file>
+    <file>image/background.png</file>
+  </qresource>
+  <qresource prefix="icon">
+    <file>icon/search_button.png</file>
+    <file>icon/hub_hover.png</file>
+    <file>icon/hub.png</file>
+    <file>icon/search_hover.png</file>
+    <file>icon/search.png</file>
+    <file>icon/coin.png</file>
+    <file>icon/collect.png</file>
+    <file>icon/danmaku.png</file>
+    <file>icon/reply.png</file>
+    <file>icon/share.png</file>
+    <file>icon/vt.png</file>
+    <file>icon/showmini_hover.png</file>
+    <file>icon/showmini.png</file>
+    <file>icon/close_hover.png</file>
+    <file>icon/sub.png</file>
+    <file>icon/close_mini_hover.png</file>
+    <file>icon/showmini_mini_hover.png</file>
+    <file>icon/close_mini.png</file>
+    <file>icon/showmini_mini.png</file>
+    <file>icon/showmini.png</file>
+    <file>icon/login.png</file>
+    <file>icon/close.png</file>
+  </qresource>
+  <qresource prefix="logo">
+    <file>logo/up1.png</file>
+    <file>logo/up.png</file>
+  </qresource>
+</RCC>

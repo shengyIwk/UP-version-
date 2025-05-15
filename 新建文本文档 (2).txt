@@ -1,0 +1,2 @@
+
+pyinstaller C:\Users\18220\Desktop\load2\py.py --noconsole --hidden-import PySide6.QtXml --icon="C:\Users\18220\Desktop\load2\up.ico"
