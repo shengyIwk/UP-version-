@@ -1,5 +1,7 @@
 import res
 import time
+from datetime import datetime
+from data_processing import data_show
 from bilibili import video_api
 from bilibili import user_api
 from PySide6.QtWidgets import QApplication,QLabel
@@ -19,19 +21,16 @@ def round_pixmap(src_pixmap: QPixmap, radius: int) -> QPixmap:
     if src_pixmap.isNull():
         return QPixmap()
     
-    # 创建透明画布
     result_pixmap = QPixmap(src_pixmap.size())
     result_pixmap.fill(Qt.transparent)
     
     painter = QPainter(result_pixmap)
-    painter.setRenderHint(QPainter.Antialiasing)  # 抗锯齿
+    painter.setRenderHint(QPainter.Antialiasing) 
     
-    # 定义圆角路径
     path = QPainterPath()
     path.addRoundedRect(0, 0, src_pixmap.width(), src_pixmap.height(),
                         radius, radius)
     
-    # 裁剪并绘制原图
     painter.setClipPath(path)
     painter.drawPixmap(0, 0, src_pixmap)
     
@@ -66,10 +65,11 @@ def hub_window_show():
     window2.setWindowFlags(Qt.WindowType.FramelessWindowHint)
     window2.setAttribute(Qt.WA_TranslucentBackground)
     window2.stackedWidget.setCurrentIndex(1)
-    window2.User_name.setText(f"{gain_uid}")
     if user_api.code_check(gain_uid)==0:
+        window2.User_name.setText(f"{user_api.name(gain_uid)}")
         window2.sub_text.setText(f"{user_api.sub(gain_uid)} Sub")
     elif user_api.code_check(gain_uid)==-400:
+        window2.User_name.setText(f"{gain_uid}")
         window2.sub_text.setText("用户不存在")
     
     window2.show()
@@ -77,7 +77,62 @@ def hub_window_show():
         
     window2.search.clicked.connect(lambda: window2.stackedWidget.setCurrentIndex(0))
 
+    window2.user_api_hub.clicked.connect(user_api_hub1)
+
     window2.search_video.clicked.connect(search_video_api)
+
+def user_api_hub1():
+    window2.user_hub_name.setText(f"{user_api.name(gain_uid)}")
+    video_list_show=user_api.video_list_show(gain_uid)
+    window2.user_hub_video_num.setText(f"{video_list_show[0]} Video")
+    sub=user_api.sub(gain_uid)
+    window2.user_hub_sub.setText(f"{sub} Sub")
+    
+    video_url=[]
+    
+    video_bvid_3=video_list_show[1:4]
+    for bvid in video_bvid_3:
+        video_url.append((video_api.video_data(bvid))[0])
+
+    for num in range(3):
+        video_api.video_face(video_url[num],f"pic_{num}")
+
+    video_api.video_face((video_api.video_owner(video_list_show[1])).get("face"),"owner_face")    
+                
+    window2.user_hub_videoshow_pic_1.setPixmap(round_pixmap(QPixmap("img/pic_0.png").scaled(window2.user_hub_videoshow_pic_1.width(), window2.user_hub_videoshow_pic_1.height(), 
+                             Qt.IgnoreAspectRatio, Qt.SmoothTransformation),radius=18))
+    window2.user_hub_videoshow_pic_2.setPixmap(round_pixmap(QPixmap("img/pic_1.png").scaled(window2.user_hub_videoshow_pic_1.width(), window2.user_hub_videoshow_pic_1.height(), 
+                             Qt.IgnoreAspectRatio, Qt.SmoothTransformation),radius=18))
+    window2.user_hub_videoshow_pic_3.setPixmap(round_pixmap(QPixmap("img/pic_2.png").scaled(window2.user_hub_videoshow_pic_1.width(), window2.user_hub_videoshow_pic_1.height(), 
+                             Qt.IgnoreAspectRatio, Qt.SmoothTransformation),radius=18))
+    window2.face.setPixmap(round_pixmap(QPixmap("img/owner_face").scaled(window2.face.width(), window2.face.height(),
+                             Qt.KeepAspectRatio, Qt.SmoothTransformation),radius=18))
+
+    month_list=user_api.video_list_clock(gain_uid,datetime.today().year)
+
+    for num in range(1,13):
+        widget = getattr(window2, f"m{num}")  
+        icon_value = data_show.clock_form(month_list, f"{num:02d}")
+        widget.setIcon(QIcon(f":/icon/icon/clock_{icon_value}.png"))
+
+    for num in range(1,4):
+        border = getattr(window2, f"user_hub_border_{num}")
+        rating_pic = getattr(window2, f"rating_{num}")
+        video_api_dic=video_api.video_stat(video_list_show[num])
+        video_api_dic['sub']=sub
+        rating_show=data_show.video_rating(video_api_dic)
+        border.setStyleSheet(f'''
+            border:4px solid rgb({rating_show[2]});
+            border-radius: 27px;
+        ''')
+        rating_pic.setIcon(QIcon(f":/icon/icon/{rating_show[1]}.png"))
+        
+        
+    
+    window2.stackedWidget.setCurrentIndex(2)
+
+
+
 
 def search_video_api():
     gain_bvid=window2.api_search_bvid.text()
